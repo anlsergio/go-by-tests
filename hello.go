@@ -3,11 +3,13 @@ package main
 import "fmt"
 
 const (
-	spanish            = "Spanish"
-	french             = "French"
-	englishHelloPrefix = "Hello, "
-	spanishHelloPrefix = "Hola, "
-	frenchHelloPrefix  = "Bonjour, "
+	spanish               = "Spanish"
+	french                = "French"
+	portuguese            = "Portuguese"
+	englishHelloPrefix    = "Hello, "
+	spanishHelloPrefix    = "Hola, "
+	frenchHelloPrefix     = "Bonjour, "
+	portugueseHelloPrefix = "Olá, "
 )
 
 func Hello(name string, language string) string {
@@ -22,6 +24,8 @@ func Hello(name string, language string) string {
 		prefix = spanishHelloPrefix
 	case french:
 		prefix = frenchHelloPrefix
+	case portuguese:
+		prefix = portugueseHelloPrefix
 	}
 
 	return prefix + name
