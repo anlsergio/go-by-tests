@@ -20,7 +20,7 @@ func ExampleAdd() {
 	// Output: 6
 }
 
-func TestArrayAdder(t *testing.T) {
+func TestArrayAdd(t *testing.T) {
 	numbers := [5]int{1, 2, 3, 4, 5}
 
 	want := 15
