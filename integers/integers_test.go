@@ -2,6 +2,7 @@ package integers
 
 import (
 	"fmt"
+	"reflect"
 	"testing"
 )
 
@@ -31,4 +32,13 @@ func TestCollectionAdd(t *testing.T) {
 			t.Errorf("want '%d', got '%d', given %v", want, got, numbers)
 		}
 	})
+}
+
+func TestCollectionsAdd(t *testing.T) {
+	want := []int{3, 9}
+	got := CollectionsAdd([]int{1, 2}, []int{0, 9})
+
+	if !reflect.DeepEqual(want, got) {
+		t.Errorf("want '%v', got '%v'", want, got)
+	}
 }

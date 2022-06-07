@@ -15,3 +15,14 @@ func CollectionAdd(numbers []int) int {
 
 	return sum
 }
+
+// CollectionsAdd returns the sum of each individual collection being passed in
+func CollectionsAdd(collections ...[]int) []int {
+	var sums []int
+
+	for _, c := range collections {
+		sums = append(sums, CollectionAdd(c))
+	}
+
+	return sums
+}
