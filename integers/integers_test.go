@@ -20,11 +20,11 @@ func ExampleAdd() {
 	// Output: 6
 }
 
-func TestArrayAdd(t *testing.T) {
+func TestCollectionAdd(t *testing.T) {
 	numbers := [5]int{1, 2, 3, 4, 5}
 
 	want := 15
-	got := ArrayAdd(numbers)
+	got := CollectionAdd(numbers)
 
 	if want != got {
 		t.Errorf("want '%d', got '%d', given %v", want, got, numbers)
