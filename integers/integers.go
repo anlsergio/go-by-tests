@@ -6,7 +6,7 @@ func Add(n1, n2 int) int {
 }
 
 // CollectionAdd returns the total sum of the numbers being passed in.
-func CollectionAdd(numbers [5]int) int {
+func CollectionAdd(numbers []int) int {
 	sum := 0
 
 	for _, n := range numbers {

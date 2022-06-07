@@ -21,12 +21,25 @@ func ExampleAdd() {
 }
 
 func TestCollectionAdd(t *testing.T) {
-	numbers := [5]int{1, 2, 3, 4, 5}
+	t.Run("collection of 5 numbers", func(t *testing.T) {
+		numbers := []int{1, 2, 3, 4, 5}
 
-	want := 15
-	got := CollectionAdd(numbers)
+		want := 15
+		got := CollectionAdd(numbers)
 
-	if want != got {
-		t.Errorf("want '%d', got '%d', given %v", want, got, numbers)
-	}
+		if want != got {
+			t.Errorf("want '%d', got '%d', given %v", want, got, numbers)
+		}
+	})
+
+	t.Run("collection of any size", func(t *testing.T) {
+		numbers := []int{1, 2, 3, 4, 5, 6}
+
+		want := 21
+		got := CollectionAdd(numbers)
+
+		if want != got {
+			t.Errorf("want '%d', got '%d', given %v", want, got, numbers)
+		}
+	})
 }
