@@ -2,7 +2,7 @@ package iteration
 
 import "testing"
 
-func TestIteration(t *testing.T) {
+func TestRepeat(t *testing.T) {
 	want := "aaaaa"
 	got := Repeat("a")
 
