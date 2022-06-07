@@ -9,7 +9,7 @@ func TestAdder(t *testing.T) {
 	want := 4
 	got := Add(2, 2)
 
-	if got != want {
+	if want != got {
 		t.Errorf("want '%d' but got '%d'", want, got)
 	}
 }
