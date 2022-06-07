@@ -42,3 +42,26 @@ func TestCollectionsAdd(t *testing.T) {
 		t.Errorf("want '%v', got '%v'", want, got)
 	}
 }
+
+func TestCollectionsTailAdd(t *testing.T) {
+	assertSums := func(t testing.TB, want, got []int) {
+		t.Helper()
+		if !reflect.DeepEqual(want, got) {
+			t.Errorf("want '%v', got '%v'", want, got)
+		}
+	}
+
+	t.Run("sum of populated slices", func(t *testing.T) {
+		want := []int{5, 9}
+		got := CollectionsTailAdd([]int{1, 2, 3}, []int{0, 9})
+
+		assertSums(t, want, got)
+	})
+
+	t.Run("ensure safety of empty slices", func(t *testing.T) {
+		want := []int{0, 9}
+		got := CollectionsTailAdd([]int{}, []int{0, 9})
+
+		assertSums(t, want, got)
+	})
+}

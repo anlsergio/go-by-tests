@@ -26,3 +26,19 @@ func CollectionsAdd(collections ...[]int) []int {
 
 	return sums
 }
+
+// CollectionsTailAdd returns the tail sum of each individual collection being passed in
+func CollectionsTailAdd(collections ...[]int) []int {
+	var sums []int
+
+	for _, c := range collections {
+		if len(c) == 0 {
+			sums = append(sums, 0)
+		} else {
+			tail := c[1:]
+			sums = append(sums, CollectionAdd(tail))
+		}
+	}
+
+	return sums
+}
