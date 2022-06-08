@@ -22,8 +22,8 @@ func TestArea(t *testing.T) {
 	}{
 		{
 			shape: Rectangle{
-				Width:  12.0,
-				Height: 6.0,
+				Width:  12,
+				Height: 6,
 			},
 			want: 72.0,
 		},
@@ -32,6 +32,13 @@ func TestArea(t *testing.T) {
 				Radius: 10,
 			},
 			want: 314.1592653589793,
+		},
+		{
+			shape: Triangle{
+				Base:   12,
+				Height: 6,
+			},
+			want: 36.0,
 		},
 	}
 
