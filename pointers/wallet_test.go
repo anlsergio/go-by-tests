@@ -11,6 +11,6 @@ func TestWallet(t *testing.T) {
 	got := wallet.Balance()
 
 	if want != got {
-		t.Errorf("want %d got %d", want, got)
+		t.Errorf("want %s got %s", want, got)
 	}
 }
