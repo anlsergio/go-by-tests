@@ -3,14 +3,14 @@ package maps
 type Dictionary map[string]string
 
 var (
-	ErrNotFound         = DictonaryErr("could not find the word you were looking for")
-	ErrWordExists       = DictonaryErr("the word you are trying to add already exists")
-	ErrWordDoesNotExist = DictonaryErr("the word you are trying to update doesn't exist")
+	ErrNotFound         = DictionaryErr("could not find the word you were looking for")
+	ErrWordExists       = DictionaryErr("the word you are trying to add already exists")
+	ErrWordDoesNotExist = DictionaryErr("the word you are trying to update doesn't exist")
 )
 
-type DictonaryErr string
+type DictionaryErr string
 
-func (d DictonaryErr) Error() string {
+func (d DictionaryErr) Error() string {
 	return string(d)
 }
 
