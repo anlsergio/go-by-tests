@@ -1,14 +1,14 @@
-package depinjection_test
+package greet_test
 
 import (
 	"bytes"
-	"hello/depinjection"
+	"hello/depinjection/greet"
 	"testing"
 )
 
 func TestGreet(t *testing.T) {
 	buffer := bytes.Buffer{}
-	depinjection.Greet(&buffer, "Chris")
+	greet.Greet(&buffer, "Chris")
 
 	want := "Hello, Chris"
 	got := buffer.String()

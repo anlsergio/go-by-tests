@@ -1,4 +1,4 @@
-package depinjection
+package greet
 
 import (
 	"fmt"
