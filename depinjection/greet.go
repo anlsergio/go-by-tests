@@ -1,10 +1,15 @@
 package depinjection
 
 import (
-	"bytes"
 	"fmt"
+	"io"
+	"os"
 )
 
-func Greet(w *bytes.Buffer, name string) {
+func Greet(w io.Writer, name string) {
 	fmt.Fprintf(w, "Hello, %s", name)
+}
+
+func main() {
+	Greet(os.Stdout, "Elodie")
 }
