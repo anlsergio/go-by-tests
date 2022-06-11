@@ -3,8 +3,9 @@ package maps
 type Dictionary map[string]string
 
 var (
-	ErrNotFound   = DictonaryErr("could not find the word you were looking for")
-	ErrWordExists = DictonaryErr("the word you are trying to add already exists")
+	ErrNotFound         = DictonaryErr("could not find the word you were looking for")
+	ErrWordExists       = DictonaryErr("the word you are trying to add already exists")
+	ErrWordDoesNotExist = DictonaryErr("the word you are trying to update doesn't exist")
 )
 
 type DictonaryErr string
@@ -22,7 +23,7 @@ func (d Dictionary) Search(word string) (string, error) {
 	return definition, nil
 }
 
-func (d Dictionary) Add(word string, definition string) error {
+func (d Dictionary) Add(word, definition string) error {
 	_, err := d.Search(word)
 	if err != ErrNotFound {
 		if err != nil {
@@ -30,6 +31,20 @@ func (d Dictionary) Add(word string, definition string) error {
 		}
 
 		return ErrWordExists
+	}
+
+	d[word] = definition
+
+	return nil
+}
+
+func (d Dictionary) Update(word, definition string) error {
+	_, err := d.Search(word)
+	if err != nil {
+		if err == ErrNotFound {
+			return ErrWordDoesNotExist
+		}
+		return err
 	}
 
 	d[word] = definition
