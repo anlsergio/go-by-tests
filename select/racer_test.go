@@ -21,7 +21,7 @@ func TestRacer(t *testing.T) {
 		want := fastURL
 		got, err := _select.Racer(slowURL, fastURL)
 		if err != nil {
-			t.Error("unexpected error but got :", err)
+			t.Error("error is unexpected but got :", err)
 		}
 
 		if want != got {
@@ -29,13 +29,12 @@ func TestRacer(t *testing.T) {
 		}
 	})
 
-	t.Run("must timeout if the response takes more than 10s", func(t *testing.T) {
-		serverA := newDelayedServer(11 * time.Second)
-		defer serverA.Close()
-		serverB := newDelayedServer(12 * time.Second)
-		defer serverB.Close()
+	t.Run("must error out if the response takes more than the specified timeout", func(t *testing.T) {
+		server := newDelayedServer(21 * time.Millisecond)
+		defer server.Close()
 
-		_, err := _select.Racer(serverA.URL, serverB.URL)
+		timeout := 20 * time.Millisecond
+		_, err := _select.ConfigurableRacer(server.URL, server.URL, timeout)
 
 		if err == nil {
 			t.Error("error expected but didn't get any")
