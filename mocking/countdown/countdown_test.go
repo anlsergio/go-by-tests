@@ -3,34 +3,61 @@ package countdown_test
 import (
 	"bytes"
 	"hello/mocking/countdown"
+	"reflect"
 	"testing"
 )
 
-type SpySleeper struct {
-	CallsCounter int
+const (
+	write = "write"
+	sleep = "sleep"
+)
+
+type SpyCountdownOperations struct {
+	Calls []string
 }
 
-func (s *SpySleeper) Sleep() {
-	s.CallsCounter++
+func (s *SpyCountdownOperations) Sleep() {
+	s.Calls = append(s.Calls, sleep)
+}
+
+func (s *SpyCountdownOperations) Write(p []byte) (n int, err error) {
+	s.Calls = append(s.Calls, write)
+	return
 }
 
 func TestCountdown(t *testing.T) {
-	buffer := &bytes.Buffer{}
-	spySleeper := &SpySleeper{}
+	t.Run("prints 3 to Go", func(t *testing.T) {
+		buffer := &bytes.Buffer{}
+		countdown.Countdown(buffer, &SpyCountdownOperations{})
 
-	countdown.Countdown(buffer, spySleeper)
-
-	want := `3
+		want := `3
 2
 1
 Go!`
-	got := buffer.String()
+		got := buffer.String()
 
-	if want != got {
-		t.Errorf("want %q got %q", want, got)
-	}
+		if want != got {
+			t.Errorf("want %q got %q", want, got)
+		}
+	})
 
-	if spySleeper.CallsCounter != 3 {
-		t.Errorf("not enough calls to sleeper. Want 3 got %d", spySleeper.CallsCounter)
-	}
+	t.Run("sleep after every print", func(t *testing.T) {
+		spySleepPrinter := &SpyCountdownOperations{}
+
+		countdown.Countdown(spySleepPrinter, spySleepPrinter)
+
+		want := []string{
+			write,
+			sleep,
+			write,
+			sleep,
+			write,
+			sleep,
+			write,
+		}
+
+		if !reflect.DeepEqual(want, spySleepPrinter.Calls) {
+			t.Errorf("want calls counter to be %v got %v", want, spySleepPrinter.Calls)
+		}
+	})
 }
