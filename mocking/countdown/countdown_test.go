@@ -5,6 +5,7 @@ import (
 	"hello/mocking/countdown"
 	"reflect"
 	"testing"
+	"time"
 )
 
 const (
@@ -23,6 +24,14 @@ func (s *SpyCountdownOperations) Sleep() {
 func (s *SpyCountdownOperations) Write(p []byte) (n int, err error) {
 	s.Calls = append(s.Calls, write)
 	return
+}
+
+type SpyTime struct {
+	timeSpentSleeping time.Duration
+}
+
+func (s *SpyTime) Sleep(duration time.Duration) {
+	s.timeSpentSleeping = duration
 }
 
 func TestCountdown(t *testing.T) {
@@ -60,4 +69,19 @@ Go!`
 			t.Errorf("want calls counter to be %v got %v", want, spySleepPrinter.Calls)
 		}
 	})
+}
+
+func TestConfigurableSleeper(t *testing.T) {
+	sleepTime := 5 * time.Second
+
+	spyTime := &SpyTime{}
+	sleeper := countdown.ConfigurableSleeper{
+		Duration:  sleepTime,
+		SleepFunc: spyTime.Sleep,
+	}
+	sleeper.Sleep()
+
+	if sleepTime != spyTime.timeSpentSleeping {
+		t.Errorf("expected time spend sleeping of %v but got %v", sleepTime, spyTime.timeSpentSleeping)
+	}
 }
