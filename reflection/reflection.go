@@ -4,16 +4,23 @@ import "reflect"
 
 func Walk(x any, fn func(input string)) {
 	val := getValue(x)
+	valLength := 0
 
-	for i := 0; i < val.NumField(); i++ {
-		field := val.Field(i)
+	var getField func(i int) reflect.Value
 
-		switch field.Kind() {
-		case reflect.String:
-			fn(field.String())
-		case reflect.Struct:
-			Walk(field.Interface(), fn)
-		}
+	switch val.Kind() {
+	case reflect.String:
+		fn(val.String())
+	case reflect.Struct:
+		valLength = val.NumField()
+		getField = val.Field
+	case reflect.Slice:
+		valLength = val.Len()
+		getField = val.Index
+	}
+
+	for i := 0; i < valLength; i++ {
+		Walk(getField(i).Interface(), fn)
 	}
 }
 
