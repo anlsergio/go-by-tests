@@ -16,3 +16,9 @@
 
 # IDE
 .idea
+
+# Hackish files
+maths/hack/*
+
+# FileSystem garbage
+.DS_Store
