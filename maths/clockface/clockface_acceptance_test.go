@@ -8,38 +8,6 @@ import (
 	"time"
 )
 
-//func TestSecondHandAtMidnight(t *testing.T) {
-//	tm := time.Date(1337, time.January, 1, 0, 0, 0, 0, time.UTC)
-//
-//	var centerAxis float64 = 150
-//
-//	want := clockface.Point{
-//		X: centerAxis,
-//		Y: centerAxis - 90,
-//	}
-//	got := clockface.SecondHand(tm)
-//
-//	if want != got {
-//		t.Errorf("Want %v, got %v", want, got)
-//	}
-//}
-//
-//func TestSecondHandAt30Seconds(t *testing.T) {
-//	tm := time.Date(1337, time.January, 1, 0, 0, 30, 0, time.UTC)
-//
-//	var centerAxis float64 = 150
-//
-//	want := clockface.Point{
-//		X: centerAxis,
-//		Y: centerAxis + 90,
-//	}
-//	got := clockface.SecondHand(tm)
-//
-//	if want != got {
-//		t.Errorf("Want %v, got %v", want, got)
-//	}
-//}
-
 type Circle struct {
 	Cx float64 `xml:"cx,attr"`
 	Cy float64 `xml:"cy,attr"`
@@ -87,22 +55,43 @@ func TestSVGWriterAtMidnight(t *testing.T) {
 			svg := SVG{}
 			xml.Unmarshal(b.Bytes(), &svg)
 
-			if !containsLine(c.line, svg.Lines) {
-				t.Errorf("Expected to find the second hand line %+v, in the SVG lines %+v", c.line, svg.Lines)
-			}
+			assertContainsLine(t, c.line, svg.Lines)
 		})
 	}
-
 }
 
-func containsLine(line Line, lines []Line) bool {
+func TestSVGWriterMinuteHand(t *testing.T) {
+	cases := []struct {
+		time time.Time
+		line Line
+	}{
+		{
+			time: simpleTime(0, 0, 0),
+			line: Line{150, 150, 150, 70},
+		},
+	}
+
+	for _, c := range cases {
+		t.Run(testName(c.time), func(t *testing.T) {
+			b := bytes.Buffer{}
+			clockface.SVGWriter(&b, c.time)
+
+			svg := SVG{}
+			xml.Unmarshal(b.Bytes(), &svg)
+
+			assertContainsLine(t, c.line, svg.Lines)
+		})
+	}
+}
+
+func assertContainsLine(t *testing.T, line Line, lines []Line) {
 	for _, l := range lines {
 		if l == line {
-			return true
+			return
 		}
 	}
 
-	return false
+	t.Errorf("Expected to find the minute hand line %+v, in the SVG lines %+v", line, lines)
 }
 
 func simpleTime(hours, minutes, seconds int) time.Time {
