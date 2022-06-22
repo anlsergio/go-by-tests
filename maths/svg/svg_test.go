@@ -1,9 +1,9 @@
-package clockface_test
+package svg_test
 
 import (
 	"bytes"
 	"encoding/xml"
-	"hello/maths/clockface"
+	"hello/maths/svg"
 	"testing"
 	"time"
 )
@@ -50,12 +50,12 @@ func TestSVGWriterAtMidnight(t *testing.T) {
 	for _, c := range cases {
 		t.Run(testName(c.time), func(t *testing.T) {
 			b := bytes.Buffer{}
-			clockface.SVGWriter(&b, c.time)
+			svg.Write(&b, c.time)
 
-			svg := SVG{}
-			xml.Unmarshal(b.Bytes(), &svg)
+			s := SVG{}
+			xml.Unmarshal(b.Bytes(), &s)
 
-			assertContainsLine(t, c.line, svg.Lines)
+			assertContainsLine(t, c.line, s.Lines)
 		})
 	}
 }
@@ -74,12 +74,12 @@ func TestSVGWriterMinuteHand(t *testing.T) {
 	for _, c := range cases {
 		t.Run(testName(c.time), func(t *testing.T) {
 			b := bytes.Buffer{}
-			clockface.SVGWriter(&b, c.time)
+			svg.Write(&b, c.time)
 
-			svg := SVG{}
-			xml.Unmarshal(b.Bytes(), &svg)
+			s := SVG{}
+			xml.Unmarshal(b.Bytes(), &s)
 
-			assertContainsLine(t, c.line, svg.Lines)
+			assertContainsLine(t, c.line, s.Lines)
 		})
 	}
 }
@@ -98,12 +98,12 @@ func TestSVGWriterHourHand(t *testing.T) {
 	for _, c := range cases {
 		t.Run(testName(c.time), func(t *testing.T) {
 			b := bytes.Buffer{}
-			clockface.SVGWriter(&b, c.time)
+			svg.Write(&b, c.time)
 
-			svg := SVG{}
-			xml.Unmarshal(b.Bytes(), &svg)
+			s := SVG{}
+			xml.Unmarshal(b.Bytes(), &s)
 
-			assertContainsLine(t, c.line, svg.Lines)
+			assertContainsLine(t, c.line, s.Lines)
 		})
 	}
 }

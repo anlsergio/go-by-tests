@@ -1,6 +1,7 @@
-package clockface
+package clockface_test
 
 import (
+	"hello/maths/clockface"
 	"math"
 	"testing"
 	"time"
@@ -13,7 +14,7 @@ type radianCase struct {
 
 type pointCase struct {
 	time  time.Time
-	point Point
+	point clockface.Point
 }
 
 func TestSecondsInRadians(t *testing.T) {
@@ -38,7 +39,7 @@ func TestSecondsInRadians(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(testName(c.time), func(t *testing.T) {
-			got := secondsInRadians(c.time)
+			got := clockface.SecondsInRadians(c.time)
 			assertRadians(t, c.angle, got)
 		})
 	}
@@ -48,17 +49,17 @@ func TestSecondHandPoint(t *testing.T) {
 	cases := []pointCase{
 		{
 			time:  simpleTime(0, 0, 30),
-			point: Point{0, -1},
+			point: clockface.Point{0, -1},
 		},
 		{
 			time:  simpleTime(0, 0, 45),
-			point: Point{-1, 0},
+			point: clockface.Point{-1, 0},
 		},
 	}
 
 	for _, c := range cases {
 		t.Run(testName(c.time), func(t *testing.T) {
-			got := secondHandPoint(c.time)
+			got := clockface.SecondHandPoint(c.time)
 			assertPoint(t, c.point, got)
 		})
 	}
@@ -78,7 +79,7 @@ func TestMinutesInRadians(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(testName(c.time), func(t *testing.T) {
-			got := minutesInRadians(c.time)
+			got := clockface.MinutesInRadians(c.time)
 			assertRadians(t, c.angle, got)
 		})
 	}
@@ -88,17 +89,17 @@ func TestMinuteHandPoint(t *testing.T) {
 	cases := []pointCase{
 		{
 			time:  simpleTime(0, 30, 0),
-			point: Point{X: 0, Y: -1},
+			point: clockface.Point{X: 0, Y: -1},
 		},
 		{
 			time:  simpleTime(0, 45, 0),
-			point: Point{X: -1, Y: 0},
+			point: clockface.Point{X: -1, Y: 0},
 		},
 	}
 
 	for _, c := range cases {
 		t.Run(testName(c.time), func(t *testing.T) {
-			got := minuteHandPoint(c.time)
+			got := clockface.MinuteHandPoint(c.time)
 			assertPoint(t, c.point, got)
 		})
 	}
@@ -126,7 +127,7 @@ func TestHoursInRadians(t *testing.T) {
 
 	for _, c := range cases {
 		t.Run(testName(c.time), func(t *testing.T) {
-			got := hoursInRadians(c.time)
+			got := clockface.HoursInRadians(c.time)
 			assertRadians(t, c.angle, got)
 		})
 	}
@@ -136,51 +137,19 @@ func TestHourHandPoint(t *testing.T) {
 	cases := []pointCase{
 		{
 			time:  simpleTime(6, 0, 0),
-			point: Point{0, -1},
+			point: clockface.Point{0, -1},
 		},
 		{
 			time:  simpleTime(21, 0, 0),
-			point: Point{-1, 0},
+			point: clockface.Point{-1, 0},
 		},
 	}
 
 	for _, c := range cases {
 		t.Run(testName(c.time), func(t *testing.T) {
-			got := hourHandPoint(c.time)
+			got := clockface.HourHandPoint(c.time)
 			assertPoint(t, c.point, got)
 		})
-	}
-}
-
-func TestSecondHandAtMidnight(t *testing.T) {
-	tm := time.Date(1337, time.January, 1, 0, 0, 0, 0, time.UTC)
-
-	var centerAxis float64 = 150
-
-	want := Point{
-		X: centerAxis,
-		Y: centerAxis - secondHandLength,
-	}
-	got := buildHand(secondHandPoint(tm), secondHandLength)
-
-	if want != got {
-		t.Errorf("Want %v, got %v", want, got)
-	}
-}
-
-func TestSecondHandAt30Seconds(t *testing.T) {
-	tm := time.Date(1337, time.January, 1, 0, 0, 30, 0, time.UTC)
-
-	var centerAxis float64 = 150
-
-	want := Point{
-		X: centerAxis,
-		Y: centerAxis + secondHandLength,
-	}
-	got := buildHand(secondHandPoint(tm), secondHandLength)
-
-	if want != got {
-		t.Errorf("Want %v, got %v", want, got)
 	}
 }
 
@@ -198,13 +167,13 @@ func assertRadians(t *testing.T, want float64, got float64) {
 	}
 }
 
-func assertPoint(t *testing.T, want Point, got Point) {
+func assertPoint(t *testing.T, want clockface.Point, got clockface.Point) {
 	if !roughlyEqualPoint(want, got) {
 		t.Fatalf("want %v point, got %v", want, got)
 	}
 }
 
-func roughlyEqualPoint(a, b Point) bool {
+func roughlyEqualPoint(a, b clockface.Point) bool {
 	return roughlyEqualFloat64(a.X, b.X) && roughlyEqualFloat64(a.Y, b.Y)
 }
 

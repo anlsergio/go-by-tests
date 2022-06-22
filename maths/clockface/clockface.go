@@ -1,138 +1,65 @@
+// Package clockface provides functions that calculate the positions of the hands.
+// of an analogue clock,.
 package clockface
 
 import (
-	"fmt"
-	"io"
 	"math"
 	"time"
 )
 
 const (
-	secondHandLength   = 90
-	minuteHandLength   = 80
-	hourHandLength     = 50
-	clockCenterX       = 150
-	clockCenterY       = 150
 	secondsInHalfClock = 30
 	minutesInHalfClock = 30
-	fullTurnInMinutes  = 2 * minutesInHalfClock
+	minutesInClock     = 2 * minutesInHalfClock
 	hoursInHalfClock   = 6
-	fullTurnInHours    = 2 * hoursInHalfClock
-	svgStart           = `<?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg xmlns="http://www.w3.org/2000/svg"
-     width="100%"
-     height="100%"
-     viewBox="0 0 300 300"
-     version="2.0">`
-	bezel  = `<circle cx="150" cy="150" r="100" style="fill:#fff;stroke:#000;stroke-width:5px;"/>`
-	svgEnd = `</svg>`
+	hoursInClock       = 2 * hoursInHalfClock
 )
 
-// Point represents a two-dimensional Cartesian coordinate
+// A Point is a Cartesian coordinate. They are used in the package.
+// to represent the unit vector from the origin of a clock hand.
 type Point struct {
 	X float64
 	Y float64
 }
 
-// SVGWriter writes an SVG representation of an analogue clock to the writer w,
-// considering the time t.
-func SVGWriter(w io.Writer, t time.Time) {
-	io.WriteString(w, svgStart)
-	io.WriteString(w, bezel)
-	secondHand(w, t)
-	minuteHand(w, t)
-	hourHand(w, t)
-	io.WriteString(w, svgEnd)
+// SecondsInRadians returns the angle of the second hand from 12 o'clock in radians.
+func SecondsInRadians(t time.Time) float64 {
+	return math.Pi / (secondsInHalfClock / float64(t.Second()))
 }
 
-func secondHand(w io.Writer, t time.Time) {
-	p := buildHand(secondHandPoint(t), secondHandLength)
-	fmt.Fprintf(w, `<line x1="150" y1="150" x2="%.3f" y2="%.3f" style="fill:none;stroke:#f00;stroke-width:3px;"/>`,
-		p.X, p.Y)
+// SecondHandPoint is the unit vector of the second hand at time `t`,.
+// represented a Point.
+func SecondHandPoint(t time.Time) Point {
+	return angleToPoint(SecondsInRadians(t))
 }
 
-func minuteHand(w io.Writer, t time.Time) {
-	p := buildHand(minuteHandPoint(t), minuteHandLength)
-	fmt.Fprintf(w, `<line x1="150" y1="150" x2="%.3f" y2="%.3f" style="fill:none;stroke:#000;stroke-width:3px;"/>`,
-		p.X, p.Y)
+// MinutesInRadians returns the angle of the minute hand from 12 o'clock in radians.
+func MinutesInRadians(t time.Time) float64 {
+	return (SecondsInRadians(t) / minutesInClock) +
+		(math.Pi / (minutesInHalfClock / float64(t.Minute())))
 }
 
-func hourHand(w io.Writer, t time.Time) {
-	p := buildHand(hourHandPoint(t), hourHandLength)
-	fmt.Fprintf(w, `<line x1="150" y1="150" x2="%.3f" y2="%.3f" style="fill:none;stroke:#000;stroke-width:3px;"/>`,
-		p.X, p.Y)
+// MinuteHandPoint is the unit vector of the minute hand at time `t`,
+// represented a Point.
+func MinuteHandPoint(t time.Time) Point {
+	return angleToPoint(MinutesInRadians(t))
 }
 
-func buildHand(p Point, length float64) Point {
-	p = scaleHandLength(p, length)
-	p = flipOverTheXAxis(p)
-	p = translateToTheCenterPosition(p)
-	return p
+// HoursInRadians returns the angle of the hour hand from 12 o'clock in radians.
+func HoursInRadians(t time.Time) float64 {
+	return (MinutesInRadians(t) / hoursInClock) +
+		(math.Pi / (hoursInHalfClock / float64(t.Hour()%hoursInClock)))
 }
 
-func translateToTheCenterPosition(p Point) Point {
-	return Point{
-		X: p.X + clockCenterX,
-		Y: p.Y + clockCenterY,
-	}
-}
-
-// flip it over the X axis because of the SVG origin point
-func flipOverTheXAxis(p Point) Point {
-	return Point{
-		X: p.X,
-		Y: -p.Y,
-	}
-}
-
-func scaleHandLength(p Point, length float64) Point {
-	return Point{
-		X: length * p.X,
-		Y: length * p.Y,
-	}
-}
-
-func secondsInRadians(t time.Time) float64 {
-	return math.Pi / (secondsInHalfClock / (float64(t.Second())))
-}
-
-func secondHandPoint(t time.Time) Point {
-	return angleToPoint(secondsInRadians(t))
-}
-
-func minutesInRadians(t time.Time) float64 {
-	// for every second, the minute hand will move 1/60th of the angle the second hand moves
-	angleBasedInSeconds := secondsInRadians(t) / fullTurnInMinutes
-	// movement of the minute hand itself based on minutes only
-	angleBasedInMinutes := math.Pi / (minutesInHalfClock / float64(t.Minute()))
-	return angleBasedInSeconds + angleBasedInMinutes
-}
-
-func minuteHandPoint(t time.Time) Point {
-	return angleToPoint(minutesInRadians(t))
-}
-
-func hoursInRadians(t time.Time) float64 {
-	angleBasedInMinutes := minutesInRadians(t) / fullTurnInHours
-	angleBasedInHours := math.Pi / (hoursInHalfClock / float64(convert24To12HourClockFormat(t)))
-	return angleBasedInMinutes + angleBasedInHours
-}
-
-func hourHandPoint(t time.Time) Point {
-	return angleToPoint(hoursInRadians(t))
-}
-
-func convert24To12HourClockFormat(t time.Time) int {
-	return t.Hour() % fullTurnInHours
+// HourHandPoint is the unit vector of the hour hand at time `t`,
+// represented a Point.
+func HourHandPoint(t time.Time) Point {
+	return angleToPoint(HoursInRadians(t))
 }
 
 func angleToPoint(angle float64) Point {
 	x := math.Sin(angle)
 	y := math.Cos(angle)
 
-	return Point{
-		X: x,
-		Y: y,
-	}
+	return Point{x, y}
 }

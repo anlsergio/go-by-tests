@@ -1,12 +1,12 @@
 package main
 
 import (
-	"hello/maths/clockface"
+	"hello/maths/svg"
 	"os"
 	"time"
 )
 
 func main() {
 	t := time.Now()
-	clockface.SVGWriter(os.Stdout, t)
+	svg.Write(os.Stdout, t)
 }
