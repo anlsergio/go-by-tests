@@ -6,11 +6,18 @@ import (
 	"time"
 )
 
+type radianCase struct {
+	time  time.Time
+	angle float64
+}
+
+type pointCase struct {
+	time  time.Time
+	point Point
+}
+
 func TestSecondsInRadians(t *testing.T) {
-	cases := []struct {
-		time  time.Time
-		angle float64
-	}{
+	cases := []radianCase{
 		{
 			time:  simpleTime(0, 0, 30),
 			angle: math.Pi,
@@ -32,19 +39,13 @@ func TestSecondsInRadians(t *testing.T) {
 	for _, c := range cases {
 		t.Run(testName(c.time), func(t *testing.T) {
 			got := secondsInRadians(c.time)
-
-			if c.angle != got {
-				t.Fatalf("want %v radians, got %v", c.angle, got)
-			}
+			assertRadians(t, c.angle, got)
 		})
 	}
 }
 
 func TestSecondHandPoint(t *testing.T) {
-	cases := []struct {
-		time  time.Time
-		point Point
-	}{
+	cases := []pointCase{
 		{
 			time:  simpleTime(0, 0, 30),
 			point: Point{0, -1},
@@ -58,19 +59,13 @@ func TestSecondHandPoint(t *testing.T) {
 	for _, c := range cases {
 		t.Run(testName(c.time), func(t *testing.T) {
 			got := secondHandPoint(c.time)
-
-			if !roughlyEqualPoint(c.point, got) {
-				t.Fatalf("want %v point, got %v", c.point, got)
-			}
+			assertPoint(t, c.point, got)
 		})
 	}
 }
 
 func TestMinutesInRadians(t *testing.T) {
-	cases := []struct {
-		time  time.Time
-		angle float64
-	}{
+	cases := []radianCase{
 		{
 			time:  simpleTime(0, 30, 0),
 			angle: math.Pi,
@@ -84,19 +79,13 @@ func TestMinutesInRadians(t *testing.T) {
 	for _, c := range cases {
 		t.Run(testName(c.time), func(t *testing.T) {
 			got := minutesInRadians(c.time)
-
-			if c.angle != got {
-				t.Fatalf("want %v radians, but got %v", c.angle, got)
-			}
+			assertRadians(t, c.angle, got)
 		})
 	}
 }
 
 func TestMinuteHandPoint(t *testing.T) {
-	cases := []struct {
-		time  time.Time
-		point Point
-	}{
+	cases := []pointCase{
 		{
 			time:  simpleTime(0, 30, 0),
 			point: Point{X: 0, Y: -1},
@@ -110,10 +99,55 @@ func TestMinuteHandPoint(t *testing.T) {
 	for _, c := range cases {
 		t.Run(testName(c.time), func(t *testing.T) {
 			got := minuteHandPoint(c.time)
+			assertPoint(t, c.point, got)
+		})
+	}
+}
 
-			if !roughlyEqualPoint(c.point, got) {
-				t.Fatalf("want %v point, got %v", c.point, got)
-			}
+func TestHoursInRadians(t *testing.T) {
+	cases := []radianCase{
+		{
+			time:  simpleTime(6, 0, 0),
+			angle: math.Pi,
+		},
+		{
+			time:  simpleTime(0, 0, 0),
+			angle: 0,
+		},
+		{
+			time:  simpleTime(21, 0, 0),
+			angle: math.Pi * 1.5,
+		},
+		{
+			time:  simpleTime(0, 1, 30),
+			angle: math.Pi / ((6 * 60 * 60) / 90),
+		},
+	}
+
+	for _, c := range cases {
+		t.Run(testName(c.time), func(t *testing.T) {
+			got := hoursInRadians(c.time)
+			assertRadians(t, c.angle, got)
+		})
+	}
+}
+
+func TestHourHandPoint(t *testing.T) {
+	cases := []pointCase{
+		{
+			time:  simpleTime(6, 0, 0),
+			point: Point{0, -1},
+		},
+		{
+			time:  simpleTime(21, 0, 0),
+			point: Point{-1, 0},
+		},
+	}
+
+	for _, c := range cases {
+		t.Run(testName(c.time), func(t *testing.T) {
+			got := hourHandPoint(c.time)
+			assertPoint(t, c.point, got)
 		})
 	}
 }
@@ -127,7 +161,7 @@ func TestSecondHandAtMidnight(t *testing.T) {
 		X: centerAxis,
 		Y: centerAxis - secondHandLength,
 	}
-	got := buildHand(tm, secondHandLength)
+	got := buildHand(secondHandPoint(tm), secondHandLength)
 
 	if want != got {
 		t.Errorf("Want %v, got %v", want, got)
@@ -143,7 +177,7 @@ func TestSecondHandAt30Seconds(t *testing.T) {
 		X: centerAxis,
 		Y: centerAxis + secondHandLength,
 	}
-	got := buildHand(tm, secondHandLength)
+	got := buildHand(secondHandPoint(tm), secondHandLength)
 
 	if want != got {
 		t.Errorf("Want %v, got %v", want, got)
@@ -156,6 +190,18 @@ func simpleTime(hours, minutes, seconds int) time.Time {
 
 func testName(t time.Time) string {
 	return t.Format("15:04:05")
+}
+
+func assertRadians(t *testing.T, want float64, got float64) {
+	if !roughlyEqualFloat64(want, got) {
+		t.Fatalf("want angle %v, got %v", want, got)
+	}
+}
+
+func assertPoint(t *testing.T, want Point, got Point) {
+	if !roughlyEqualPoint(want, got) {
+		t.Fatalf("want %v point, got %v", want, got)
+	}
 }
 
 func roughlyEqualPoint(a, b Point) bool {

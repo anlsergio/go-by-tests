@@ -84,6 +84,30 @@ func TestSVGWriterMinuteHand(t *testing.T) {
 	}
 }
 
+func TestSVGWriterHourHand(t *testing.T) {
+	cases := []struct {
+		time time.Time
+		line Line
+	}{
+		{
+			time: simpleTime(6, 0, 0),
+			line: Line{150, 150, 150, 200},
+		},
+	}
+
+	for _, c := range cases {
+		t.Run(testName(c.time), func(t *testing.T) {
+			b := bytes.Buffer{}
+			clockface.SVGWriter(&b, c.time)
+
+			svg := SVG{}
+			xml.Unmarshal(b.Bytes(), &svg)
+
+			assertContainsLine(t, c.line, svg.Lines)
+		})
+	}
+}
+
 func assertContainsLine(t *testing.T, line Line, lines []Line) {
 	for _, l := range lines {
 		if l == line {
@@ -91,7 +115,7 @@ func assertContainsLine(t *testing.T, line Line, lines []Line) {
 		}
 	}
 
-	t.Errorf("Expected to find the minute hand line %+v, in the SVG lines %+v", line, lines)
+	t.Errorf("Expected to find the hand line %+v, in the SVG lines %+v", line, lines)
 }
 
 func simpleTime(hours, minutes, seconds int) time.Time {
