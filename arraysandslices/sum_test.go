@@ -1,4 +1,4 @@
-package collections_test
+package arraysandslices_test
 
 import (
 	collections "hello/arraysandslices"

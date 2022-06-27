@@ -1,7 +1,7 @@
 package collections_test
 
 import (
-	collections "hello/arraysandslices"
+	"hello/arraysandslices/collections"
 	"testing"
 )
 
