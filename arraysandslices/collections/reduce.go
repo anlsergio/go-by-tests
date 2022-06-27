@@ -1,6 +1,6 @@
 package collections
 
-func Reduce[T any](iterable []T, accumulator func(T, T) T, initialValue T) T {
+func Reduce[K, V any](iterable []K, accumulator func(V, K) V, initialValue V) V {
 	// The initial value is used as "The Identity Element":
 	// 	In mathematics, an identity element, or neutral element,
 	// 	of a binary operation operating on a set is an element of the set which
