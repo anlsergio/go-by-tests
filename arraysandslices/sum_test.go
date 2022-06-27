@@ -38,14 +38,14 @@ func TestCollectionsTailAdd(t *testing.T) {
 
 	t.Run("sum of populated slices", func(t *testing.T) {
 		want := []int{5, 9}
-		got := collections.TailAdd([]int{1, 2, 3}, []int{0, 9})
+		got := collections.AddTails([]int{1, 2, 3}, []int{0, 9})
 
 		assertSums(t, want, got)
 	})
 
 	t.Run("ensure safety of empty slices", func(t *testing.T) {
 		want := []int{0, 9}
-		got := collections.TailAdd([]int{}, []int{0, 9})
+		got := collections.AddTails([]int{}, []int{0, 9})
 
 		assertSums(t, want, got)
 	})

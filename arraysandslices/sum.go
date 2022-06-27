@@ -22,8 +22,8 @@ func AddCollections(collections ...[]int) []int {
 	return sums
 }
 
-// TailAdd returns the tail sum of each individual collection being passed in
-func TailAdd(collections ...[]int) []int {
+// AddTails returns the tail sum of each individual collection being passed in
+func AddTails(collections ...[]int) []int {
 	var sums []int
 
 	for _, c := range collections {
