@@ -35,3 +35,10 @@ func AssertEqual[T comparable](t *testing.T, want, got T) {
 		t.Errorf("want %v, got %v", want, got)
 	}
 }
+
+func AssertTrue(t *testing.T, got bool) {
+	t.Helper()
+	if !got {
+		t.Error("want true, got ", got)
+	}
+}
