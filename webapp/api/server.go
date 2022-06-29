@@ -1,13 +1,14 @@
-package main
+package api
 
 import (
 	"fmt"
+	"github.com/anlsergio/go-by-tests/webapp/store"
 	"net/http"
 	"strings"
 )
 
 type PlayerServer struct {
-	store PlayerStore
+	Store store.PlayerStore
 }
 
 func (s *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -22,7 +23,7 @@ func (s *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *PlayerServer) showScore(w http.ResponseWriter, player string) {
-	score := s.store.GetPlayerScore(player)
+	score := s.Store.GetPlayerScore(player)
 
 	if score == 0 {
 		w.WriteHeader(http.StatusNotFound)
@@ -32,11 +33,6 @@ func (s *PlayerServer) showScore(w http.ResponseWriter, player string) {
 }
 
 func (s *PlayerServer) processWin(w http.ResponseWriter, player string) {
-	s.store.RecordWin(player)
+	s.Store.RecordWin(player)
 	w.WriteHeader(http.StatusAccepted)
-}
-
-type PlayerStore interface {
-	GetPlayerScore(name string) int
-	RecordWin(name string)
 }

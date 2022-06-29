@@ -1,6 +1,7 @@
-package main
+package api
 
 import (
+	"github.com/anlsergio/go-by-tests/webapp/store"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -8,7 +9,7 @@ import (
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	player := "Pepper"
-	store := NewInMemoryPlayerStore()
+	store := store.NewInMemoryPlayerStore()
 	server := PlayerServer{store}
 
 	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))

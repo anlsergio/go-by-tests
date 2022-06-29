@@ -1,4 +1,4 @@
-package main
+package api
 
 import (
 	"fmt"
@@ -31,7 +31,7 @@ func TestGetPlayers(t *testing.T) {
 	}
 
 	server := &PlayerServer{
-		store: &store,
+		Store: &store,
 	}
 
 	t.Run("returns Pepper's score", func(t *testing.T) {
