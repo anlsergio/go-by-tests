@@ -5,15 +5,9 @@ import (
 	"net/http"
 )
 
-type InMemoryPlayerStore struct{}
-
-func (s *InMemoryPlayerStore) GetPlayerScore(name string) int {
-	return 123
-}
-
 func main() {
 	server := &PlayerServer{
-		store: &InMemoryPlayerStore{},
+		store: NewInMemoryPlayerStore(),
 	}
 
 	log.Fatal(http.ListenAndServe(":8080", server))
