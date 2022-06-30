@@ -1,15 +1,24 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/anlsergio/go-by-tests/webapp/model"
+	"io"
 	"net/http"
 	"net/http/httptest"
+	"reflect"
 	"testing"
 )
 
 type StubPlayerStore struct {
 	scores   map[string]int
 	winCalls []string
+	league   []model.Player
+}
+
+func (s *StubPlayerStore) GetLeague() []model.Player {
+	return s.league
 }
 
 func (s *StubPlayerStore) GetPlayerScore(name string) int {
@@ -92,17 +101,57 @@ func TestStoreWins(t *testing.T) {
 }
 
 func TestLeague(t *testing.T) {
-	store := StubPlayerStore{}
-	server := NewPlayerServer(&store)
+	t.Run("it returns the league table as JSON", func(t *testing.T) {
+		wantLeague := []model.Player{
+			{"Cleo", 32},
+			{"Chris", 20},
+			{"Trevor", 24},
+		}
 
-	t.Run("it returns 200 on /league", func(t *testing.T) {
-		request, _ := http.NewRequest(http.MethodGet, "/league", nil)
+		store := StubPlayerStore{
+			league: wantLeague,
+		}
+		server := NewPlayerServer(&store)
+
+		request := newLeagueRequest()
 		spyResponse := httptest.NewRecorder()
 
 		server.ServeHTTP(spyResponse, request)
 
+		got := getLeagueFromResponse(t, spyResponse.Body)
+
 		assertStatusCode(t, http.StatusOK, spyResponse.Code)
+		assertContentType(t, spyResponse)
+		assertLeague(t, wantLeague, got)
 	})
+}
+
+func assertContentType(t testing.TB, spyResponse *httptest.ResponseRecorder) {
+	if spyResponse.Result().Header.Get("content-type") != "application/json" {
+		t.Error("response header does not have content-type of application/json, got ", spyResponse.Result().Header)
+	}
+}
+
+func assertLeague(t *testing.T, want []model.Player, got []model.Player) {
+	if !reflect.DeepEqual(want, got) {
+		t.Errorf("want %v got %v", want, got)
+	}
+}
+
+func getLeagueFromResponse(t testing.TB, body io.Reader) (league []model.Player) {
+	t.Helper()
+
+	err := json.NewDecoder(body).Decode(&league)
+	if err != nil {
+		t.Fatalf("unable to parse response %q from server, '%v'", body, err)
+	}
+
+	return
+}
+
+func newLeagueRequest() *http.Request {
+	req, _ := http.NewRequest(http.MethodGet, "/league", nil)
+	return req
 }
 
 func newGetScoreRequest(player string) *http.Request {

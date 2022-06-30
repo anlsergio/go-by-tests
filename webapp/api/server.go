@@ -1,6 +1,7 @@
 package api
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/anlsergio/go-by-tests/webapp/store"
 	"net/http"
@@ -12,8 +13,11 @@ type PlayerServer struct {
 	http.Handler
 }
 
+const jsonContentType = "application/json"
+
 func (s *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
+	w.Header().Set("content-type", jsonContentType)
+	json.NewEncoder(w).Encode(s.Store.GetLeague())
 }
 
 func (s *PlayerServer) playersHandler(w http.ResponseWriter, r *http.Request) {
