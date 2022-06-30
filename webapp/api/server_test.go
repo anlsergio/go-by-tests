@@ -93,6 +93,20 @@ func TestStoreWins(t *testing.T) {
 	})
 }
 
+func TestLeague(t *testing.T) {
+	store := StubPlayerStore{}
+	server := &PlayerServer{&store}
+
+	t.Run("it returns 200 on /league", func(t *testing.T) {
+		request, _ := http.NewRequest(http.MethodGet, "/league", nil)
+		spyResponse := httptest.NewRecorder()
+
+		server.ServeHTTP(spyResponse, request)
+
+		assertStatusCode(t, http.StatusOK, spyResponse.Code)
+	})
+}
+
 func newGetScoreRequest(player string) *http.Request {
 	req, _ := http.NewRequest(http.MethodGet, fmt.Sprint("/players/", player), nil)
 
