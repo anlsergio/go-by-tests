@@ -9,13 +9,7 @@ import (
 
 type PlayerServer struct {
 	Store store.PlayerStore
-}
-
-func (s *PlayerServer) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	router := http.NewServeMux()
-	router.Handle("/league", http.HandlerFunc(s.leagueHandler))
-	router.Handle("/players/", http.HandlerFunc(s.playersHandler))
-	router.ServeHTTP(w, r)
+	http.Handler
 }
 
 func (s *PlayerServer) leagueHandler(w http.ResponseWriter, r *http.Request) {
@@ -46,4 +40,18 @@ func (s *PlayerServer) showScore(w http.ResponseWriter, player string) {
 func (s *PlayerServer) processWin(w http.ResponseWriter, player string) {
 	s.Store.RecordWin(player)
 	w.WriteHeader(http.StatusAccepted)
+}
+
+func NewPlayerServer(store store.PlayerStore) *PlayerServer {
+	s := new(PlayerServer)
+
+	s.Store = store
+
+	router := http.NewServeMux()
+	router.Handle("/league", http.HandlerFunc(s.leagueHandler))
+	router.Handle("/players/", http.HandlerFunc(s.playersHandler))
+
+	s.Handler = router
+
+	return s
 }
