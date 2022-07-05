@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"fmt"
 	"github.com/anlsergio/go-by-tests/webapp/model"
 	"io"
@@ -138,19 +137,16 @@ func assertLeague(t *testing.T, want []model.Player, got []model.Player) {
 	}
 }
 
-func getLeagueFromResponse(t testing.TB, body io.Reader) (league []model.Player) {
+func getLeagueFromResponse(t testing.TB, body io.Reader) []model.Player {
 	t.Helper()
+	league, _ := model.NewLeague(body)
 
-	err := json.NewDecoder(body).Decode(&league)
-	if err != nil {
-		t.Fatalf("unable to parse response %q from server, '%v'", body, err)
-	}
-
-	return
+	return league
 }
 
 func newLeagueRequest() *http.Request {
 	req, _ := http.NewRequest(http.MethodGet, "/league", nil)
+
 	return req
 }
 
