@@ -3,15 +3,17 @@ package store_test
 import (
 	"github.com/anlsergio/go-by-tests/webapp/model"
 	"github.com/anlsergio/go-by-tests/webapp/store"
+	"io"
+	"os"
 	"reflect"
-	"strings"
 	"testing"
 )
 
 func TestFileSystemStore(t *testing.T) {
-	db := strings.NewReader(`[
+	db, cleanDB := createTempFile(t, `[
 	{"Name": "Cleo", "Wins": 10},
 	{"Name": "Chris", "Wins": 33}]`)
+	defer cleanDB()
 
 	s := store.FileSystemPlayerStore{Database: db}
 
@@ -23,6 +25,7 @@ func TestFileSystemStore(t *testing.T) {
 		got := s.GetLeague()
 		assertLeague(t, want, got)
 
+		// read again (Seek testing)
 		got = s.GetLeague()
 		assertLeague(t, want, got)
 	})
@@ -44,4 +47,22 @@ func assertLeague(t *testing.T, want []model.Player, got []model.Player) {
 	if !reflect.DeepEqual(want, got) {
 		t.Errorf("want %v got %v", want, got)
 	}
+}
+
+func createTempFile(t testing.TB, initialData string) (fileBuffer io.ReadWriteSeeker, removeTempFile func()) {
+	t.Helper()
+
+	tempFile, err := os.CreateTemp("", "db")
+	if err != nil {
+		t.Fatalf("could not create temp file %v", err)
+	}
+
+	tempFile.Write([]byte(initialData))
+
+	removeTempFile = func() {
+		tempFile.Close()
+		os.Remove(tempFile.Name())
+	}
+
+	return tempFile, removeTempFile
 }
