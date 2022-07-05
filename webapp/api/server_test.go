@@ -13,10 +13,10 @@ import (
 type StubPlayerStore struct {
 	scores   map[string]int
 	winCalls []string
-	league   []model.Player
+	league   model.League
 }
 
-func (s *StubPlayerStore) GetLeague() []model.Player {
+func (s *StubPlayerStore) GetLeague() model.League {
 	return s.league
 }
 

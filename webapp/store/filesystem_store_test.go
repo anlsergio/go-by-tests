@@ -9,7 +9,7 @@ import (
 	"testing"
 )
 
-func TestFileSystemStore(t *testing.T) {
+func TestFileSystemStoreRead(t *testing.T) {
 	db, cleanDB := createTempFile(t, `[
 	{"Name": "Cleo", "Wins": 10},
 	{"Name": "Chris", "Wins": 33}]`)
@@ -32,6 +32,23 @@ func TestFileSystemStore(t *testing.T) {
 
 	t.Run("get player score", func(t *testing.T) {
 		want := 33
+		got := s.GetPlayerScore("Chris")
+		assertScoreEquals(t, want, got)
+	})
+}
+
+func TestFileSystemStoreWrites(t *testing.T) {
+	db, cleanDB := createTempFile(t, `[
+	{"Name": "Cleo", "Wins": 10},
+	{"Name": "Chris", "Wins": 33}]`)
+	defer cleanDB()
+
+	s := store.FileSystemPlayerStore{Database: db}
+
+	t.Run("store wins for existing players", func(t *testing.T) {
+		s.RecordWin("Chris")
+
+		want := 34
 		got := s.GetPlayerScore("Chris")
 		assertScoreEquals(t, want, got)
 	})
