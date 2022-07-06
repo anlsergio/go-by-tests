@@ -25,10 +25,10 @@ func TestFileSystemStoreRead(t *testing.T) {
 	s, err := store.NewFileSystemStore(db)
 	tests.AssertNoError(t, err)
 
-	t.Run("league from reader", func(t *testing.T) {
+	t.Run("sorted league data by score", func(t *testing.T) {
 		want := []model.Player{
-			{"Cleo", 10},
 			{"Chris", 33},
+			{"Cleo", 10},
 		}
 		got := s.GetLeague()
 		assertLeague(t, want, got)
@@ -71,13 +71,15 @@ func TestFileSystemStoreWrites(t *testing.T) {
 	})
 }
 
-func assertScoreEquals(t *testing.T, want int, got int) {
+func assertScoreEquals(t testing.TB, want int, got int) {
+	t.Helper()
 	if want != got {
 		t.Errorf("want %d, got %d", want, got)
 	}
 }
 
-func assertLeague(t *testing.T, want []model.Player, got []model.Player) {
+func assertLeague(t testing.TB, want []model.Player, got []model.Player) {
+	t.Helper()
 	if !reflect.DeepEqual(want, got) {
 		t.Errorf("want %v got %v", want, got)
 	}

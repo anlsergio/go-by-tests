@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/anlsergio/go-by-tests/webapp/model"
 	"os"
+	"sort"
 )
 
 type FileSystemPlayerStore struct {
@@ -22,6 +23,10 @@ func (s *FileSystemPlayerStore) GetPlayerScore(name string) (wins int) {
 }
 
 func (s *FileSystemPlayerStore) GetLeague() model.League {
+	sort.Slice(s.League, func(i, j int) bool {
+		return s.League[i].Wins > s.League[j].Wins
+	})
+
 	return s.League
 }
 
