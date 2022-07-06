@@ -15,7 +15,7 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	db, cleanDB := createTempFile(t, "")
 	defer cleanDB()
 
-	s := &store.FileSystemPlayerStore{Database: db}
+	s := store.NewFileSystemStore(db)
 	server := NewPlayerServer(s)
 
 	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
