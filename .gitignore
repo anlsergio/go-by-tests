@@ -22,3 +22,6 @@ maths/hack/*
 
 # FileSystem garbage
 .DS_Store
+
+# DB file
+*.db.json
