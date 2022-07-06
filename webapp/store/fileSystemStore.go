@@ -41,7 +41,11 @@ func (s *FileSystemPlayerStore) RecordWin(name string) {
 }
 
 func NewFileSystemStore(file *os.File) (*FileSystemPlayerStore, error) {
-	file.Seek(0, 0)
+	err := initPlayerDBFile(file)
+	if err != nil {
+		return nil, fmt.Errorf("problem initializing player db file, %v", err)
+	}
+
 	league, err := model.NewLeague(file)
 	if err != nil {
 		return nil, fmt.Errorf("problem loading player store from file %s, %v", file.Name(), err)
@@ -51,4 +55,24 @@ func NewFileSystemStore(file *os.File) (*FileSystemPlayerStore, error) {
 		Database: json.NewEncoder(&tape{file}),
 		League:   league,
 	}, nil
+}
+
+func initPlayerDBFile(file *os.File) error {
+	file.Seek(0, 0)
+
+	info, err := file.Stat()
+	if err != nil {
+		return fmt.Errorf("problem getting file info from file %s, %v", file.Name(), err)
+	}
+
+	if info.Size() == 0 {
+		initEmptyFile(file)
+	}
+
+	return nil
+}
+
+func initEmptyFile(file *os.File) {
+	file.Write([]byte("[]"))
+	file.Seek(0, 0)
 }

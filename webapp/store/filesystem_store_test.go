@@ -8,6 +8,14 @@ import (
 	"testing"
 )
 
+func TestNewFileSystemStore(t *testing.T) {
+	db, cleanDB := tests.CreateTempFile(t, "")
+	defer cleanDB()
+
+	_, err := store.NewFileSystemStore(db)
+	tests.AssertNoError(t, err)
+}
+
 func TestFileSystemStoreRead(t *testing.T) {
 	db, cleanDB := tests.CreateTempFile(t, `[
 	{"Name": "Cleo", "Wins": 10},
