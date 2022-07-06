@@ -29,9 +29,13 @@ func (s *FileSystemPlayerStore) GetLeague() model.League {
 func (s *FileSystemPlayerStore) RecordWin(name string) {
 	league := s.GetLeague()
 	player := league.Find(name)
-
 	if player != nil {
 		player.Wins++
+	} else {
+		league = append(league, model.Player{
+			Name: name,
+			Wins: 1,
+		})
 	}
 
 	s.resetReaderOffset()
