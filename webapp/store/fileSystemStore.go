@@ -4,10 +4,11 @@ import (
 	"encoding/json"
 	"github.com/anlsergio/go-by-tests/webapp/model"
 	"io"
+	"os"
 )
 
 type FileSystemPlayerStore struct {
-	Database io.ReadWriteSeeker
+	Database io.Writer
 	League   model.League
 }
 
@@ -36,20 +37,15 @@ func (s *FileSystemPlayerStore) RecordWin(name string) {
 		})
 	}
 
-	resetReaderOffset(s.Database)
 	json.NewEncoder(s.Database).Encode(s.League)
 }
 
-func NewFileSystemStore(db io.ReadWriteSeeker) *FileSystemPlayerStore {
-	resetReaderOffset(db)
+func NewFileSystemStore(db *os.File) *FileSystemPlayerStore {
+	db.Seek(0, 0)
 	league, _ := model.NewLeague(db)
 
 	return &FileSystemPlayerStore{
-		Database: db,
+		Database: &tape{db},
 		League:   league,
 	}
-}
-
-func resetReaderOffset(db io.ReadWriteSeeker) {
-	db.Seek(0, 0)
 }

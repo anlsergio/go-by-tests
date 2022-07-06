@@ -3,14 +3,13 @@ package store_test
 import (
 	"github.com/anlsergio/go-by-tests/webapp/model"
 	"github.com/anlsergio/go-by-tests/webapp/store"
-	"io"
-	"os"
+	"github.com/anlsergio/go-by-tests/webapp/tests"
 	"reflect"
 	"testing"
 )
 
 func TestFileSystemStoreRead(t *testing.T) {
-	db, cleanDB := createTempFile(t, `[
+	db, cleanDB := tests.CreateTempFile(t, `[
 	{"Name": "Cleo", "Wins": 10},
 	{"Name": "Chris", "Wins": 33}]`)
 	defer cleanDB()
@@ -38,7 +37,7 @@ func TestFileSystemStoreRead(t *testing.T) {
 }
 
 func TestFileSystemStoreWrites(t *testing.T) {
-	db, cleanDB := createTempFile(t, `[
+	db, cleanDB := tests.CreateTempFile(t, `[
 	{"Name": "Cleo", "Wins": 10},
 	{"Name": "Chris", "Wins": 33}]`)
 	defer cleanDB()
@@ -72,22 +71,4 @@ func assertLeague(t *testing.T, want []model.Player, got []model.Player) {
 	if !reflect.DeepEqual(want, got) {
 		t.Errorf("want %v got %v", want, got)
 	}
-}
-
-func createTempFile(t testing.TB, initialData string) (fileBuffer io.ReadWriteSeeker, removeTempFile func()) {
-	t.Helper()
-
-	tempFile, err := os.CreateTemp("", "db")
-	if err != nil {
-		t.Fatalf("could not create temp file %v", err)
-	}
-
-	tempFile.Write([]byte(initialData))
-
-	removeTempFile = func() {
-		tempFile.Close()
-		os.Remove(tempFile.Name())
-	}
-
-	return tempFile, removeTempFile
 }

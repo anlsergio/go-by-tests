@@ -3,16 +3,15 @@ package api
 import (
 	"github.com/anlsergio/go-by-tests/webapp/model"
 	"github.com/anlsergio/go-by-tests/webapp/store"
-	"io"
+	"github.com/anlsergio/go-by-tests/webapp/tests"
 	"net/http"
 	"net/http/httptest"
-	"os"
 	"testing"
 )
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	player := "Pepper"
-	db, cleanDB := createTempFile(t, "")
+	db, cleanDB := tests.CreateTempFile(t, "")
 	defer cleanDB()
 
 	s := store.NewFileSystemStore(db)
@@ -41,22 +40,4 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 		got := getLeagueFromResponse(t, response.Body)
 		assertLeague(t, want, got)
 	})
-}
-
-func createTempFile(t testing.TB, initialData string) (fileBuffer io.ReadWriteSeeker, removeTempFile func()) {
-	t.Helper()
-
-	tempFile, err := os.CreateTemp("", "db")
-	if err != nil {
-		t.Fatalf("could not create temp file %v", err)
-	}
-
-	tempFile.Write([]byte(initialData))
-
-	removeTempFile = func() {
-		tempFile.Close()
-		os.Remove(tempFile.Name())
-	}
-
-	return tempFile, removeTempFile
 }
