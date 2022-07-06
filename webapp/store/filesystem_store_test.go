@@ -14,7 +14,8 @@ func TestFileSystemStoreRead(t *testing.T) {
 	{"Name": "Chris", "Wins": 33}]`)
 	defer cleanDB()
 
-	s := store.NewFileSystemStore(db)
+	s, err := store.NewFileSystemStore(db)
+	tests.AssertNoError(t, err)
 
 	t.Run("league from reader", func(t *testing.T) {
 		want := []model.Player{
@@ -42,7 +43,8 @@ func TestFileSystemStoreWrites(t *testing.T) {
 	{"Name": "Chris", "Wins": 33}]`)
 	defer cleanDB()
 
-	s := store.NewFileSystemStore(db)
+	s, err := store.NewFileSystemStore(db)
+	tests.AssertNoError(t, err)
 
 	t.Run("store wins for existing players", func(t *testing.T) {
 		s.RecordWin("Chris")

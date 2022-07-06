@@ -2,6 +2,7 @@ package store
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/anlsergio/go-by-tests/webapp/model"
 	"os"
 )
@@ -39,12 +40,15 @@ func (s *FileSystemPlayerStore) RecordWin(name string) {
 	s.Database.Encode(s.League)
 }
 
-func NewFileSystemStore(file *os.File) *FileSystemPlayerStore {
+func NewFileSystemStore(file *os.File) (*FileSystemPlayerStore, error) {
 	file.Seek(0, 0)
-	league, _ := model.NewLeague(file)
+	league, err := model.NewLeague(file)
+	if err != nil {
+		return nil, fmt.Errorf("problem loading player store from file %s, %v", file.Name(), err)
+	}
 
 	return &FileSystemPlayerStore{
 		Database: json.NewEncoder(&tape{file}),
 		League:   league,
-	}
+	}, nil
 }

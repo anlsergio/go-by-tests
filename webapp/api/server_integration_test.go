@@ -11,10 +11,12 @@ import (
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	player := "Pepper"
-	db, cleanDB := tests.CreateTempFile(t, "")
+	db, cleanDB := tests.CreateTempFile(t, `[]`)
 	defer cleanDB()
 
-	s := store.NewFileSystemStore(db)
+	s, err := store.NewFileSystemStore(db)
+	tests.AssertNoError(t, err)
+
 	server := NewPlayerServer(s)
 
 	server.ServeHTTP(httptest.NewRecorder(), newPostWinRequest(player))
