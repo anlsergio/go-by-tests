@@ -1,8 +1,6 @@
-package api
+package poker
 
 import (
-	"github.com/anlsergio/go-by-tests/webapp/model"
-	"github.com/anlsergio/go-by-tests/webapp/store"
 	"github.com/anlsergio/go-by-tests/webapp/tests"
 	"net/http"
 	"net/http/httptest"
@@ -14,7 +12,7 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	db, cleanDB := tests.CreateTempFile(t, `[]`)
 	defer cleanDB()
 
-	s, err := store.NewFileSystemStore(db)
+	s, err := NewFileSystemStore(db)
 	tests.AssertNoError(t, err)
 
 	server := NewPlayerServer(s)
@@ -36,7 +34,7 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 		server.ServeHTTP(response, newLeagueRequest())
 		assertStatusCode(t, response.Code, http.StatusOK)
 
-		want := []model.Player{
+		want := []Player{
 			{player, 3},
 		}
 		got := getLeagueFromResponse(t, response.Body)

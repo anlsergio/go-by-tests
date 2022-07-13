@@ -1,10 +1,7 @@
-package store_test
+package poker
 
 import (
-	"github.com/anlsergio/go-by-tests/webapp/model"
-	"github.com/anlsergio/go-by-tests/webapp/store"
 	"github.com/anlsergio/go-by-tests/webapp/tests"
-	"reflect"
 	"testing"
 )
 
@@ -12,7 +9,7 @@ func TestNewFileSystemStore(t *testing.T) {
 	db, cleanDB := tests.CreateTempFile(t, "")
 	defer cleanDB()
 
-	_, err := store.NewFileSystemStore(db)
+	_, err := NewFileSystemStore(db)
 	tests.AssertNoError(t, err)
 }
 
@@ -22,11 +19,11 @@ func TestFileSystemStoreRead(t *testing.T) {
 	{"Name": "Chris", "Wins": 33}]`)
 	defer cleanDB()
 
-	s, err := store.NewFileSystemStore(db)
+	s, err := NewFileSystemStore(db)
 	tests.AssertNoError(t, err)
 
 	t.Run("sorted league data by score", func(t *testing.T) {
-		want := []model.Player{
+		want := []Player{
 			{"Chris", 33},
 			{"Cleo", 10},
 		}
@@ -51,7 +48,7 @@ func TestFileSystemStoreWrites(t *testing.T) {
 	{"Name": "Chris", "Wins": 33}]`)
 	defer cleanDB()
 
-	s, err := store.NewFileSystemStore(db)
+	s, err := NewFileSystemStore(db)
 	tests.AssertNoError(t, err)
 
 	t.Run("store wins for existing players", func(t *testing.T) {
@@ -75,12 +72,5 @@ func assertScoreEquals(t testing.TB, want int, got int) {
 	t.Helper()
 	if want != got {
 		t.Errorf("want %d, got %d", want, got)
-	}
-}
-
-func assertLeague(t testing.TB, want []model.Player, got []model.Player) {
-	t.Helper()
-	if !reflect.DeepEqual(want, got) {
-		t.Errorf("want %v got %v", want, got)
 	}
 }

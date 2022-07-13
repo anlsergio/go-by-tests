@@ -1,15 +1,14 @@
-package api
+package poker
 
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/anlsergio/go-by-tests/webapp/store"
 	"net/http"
 	"strings"
 )
 
 type PlayerServer struct {
-	Store store.PlayerStore
+	Store PlayerStore
 	http.Handler
 }
 
@@ -46,7 +45,7 @@ func (s *PlayerServer) processWin(w http.ResponseWriter, player string) {
 	w.WriteHeader(http.StatusAccepted)
 }
 
-func NewPlayerServer(store store.PlayerStore) *PlayerServer {
+func NewPlayerServer(store PlayerStore) *PlayerServer {
 	s := new(PlayerServer)
 
 	s.Store = store

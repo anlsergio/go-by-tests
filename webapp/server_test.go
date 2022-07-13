@@ -1,8 +1,7 @@
-package api
+package poker
 
 import (
 	"fmt"
-	"github.com/anlsergio/go-by-tests/webapp/model"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -13,10 +12,10 @@ import (
 type StubPlayerStore struct {
 	scores   map[string]int
 	winCalls []string
-	league   model.League
+	league   League
 }
 
-func (s *StubPlayerStore) GetLeague() model.League {
+func (s *StubPlayerStore) GetLeague() League {
 	return s.league
 }
 
@@ -101,7 +100,7 @@ func TestStoreWins(t *testing.T) {
 
 func TestLeague(t *testing.T) {
 	t.Run("it returns the league table as JSON", func(t *testing.T) {
-		wantLeague := []model.Player{
+		wantLeague := []Player{
 			{"Cleo", 32},
 			{"Chris", 20},
 			{"Trevor", 24},
@@ -131,15 +130,15 @@ func assertContentType(t testing.TB, spyResponse *httptest.ResponseRecorder) {
 	}
 }
 
-func assertLeague(t *testing.T, want []model.Player, got []model.Player) {
+func assertLeague(t *testing.T, want []Player, got []Player) {
 	if !reflect.DeepEqual(want, got) {
 		t.Errorf("want %v got %v", want, got)
 	}
 }
 
-func getLeagueFromResponse(t testing.TB, body io.Reader) []model.Player {
+func getLeagueFromResponse(t testing.TB, body io.Reader) []Player {
 	t.Helper()
-	league, _ := model.NewLeague(body)
+	league, _ := NewLeague(body)
 
 	return league
 }

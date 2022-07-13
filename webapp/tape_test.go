@@ -1,4 +1,4 @@
-package store
+package poker
 
 import (
 	"github.com/anlsergio/go-by-tests/webapp/tests"

@@ -1,16 +1,15 @@
-package store
+package poker
 
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/anlsergio/go-by-tests/webapp/model"
 	"os"
 	"sort"
 )
 
 type FileSystemPlayerStore struct {
 	Database *json.Encoder
-	League   model.League
+	League   League
 }
 
 func (s *FileSystemPlayerStore) GetPlayerScore(name string) (wins int) {
@@ -22,7 +21,7 @@ func (s *FileSystemPlayerStore) GetPlayerScore(name string) (wins int) {
 	return wins
 }
 
-func (s *FileSystemPlayerStore) GetLeague() model.League {
+func (s *FileSystemPlayerStore) GetLeague() League {
 	sort.Slice(s.League, func(i, j int) bool {
 		return s.League[i].Wins > s.League[j].Wins
 	})
@@ -36,7 +35,7 @@ func (s *FileSystemPlayerStore) RecordWin(name string) {
 	if player != nil {
 		player.Wins++
 	} else {
-		s.League = append(s.League, model.Player{
+		s.League = append(s.League, Player{
 			Name: name,
 			Wins: 1,
 		})
@@ -51,7 +50,7 @@ func NewFileSystemStore(file *os.File) (*FileSystemPlayerStore, error) {
 		return nil, fmt.Errorf("problem initializing player db file, %v", err)
 	}
 
-	league, err := model.NewLeague(file)
+	league, err := NewLeague(file)
 	if err != nil {
 		return nil, fmt.Errorf("problem loading player store from file %s, %v", file.Name(), err)
 	}

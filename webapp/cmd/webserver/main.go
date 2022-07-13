@@ -1,8 +1,7 @@
 package main
 
 import (
-	"github.com/anlsergio/go-by-tests/webapp/api"
-	"github.com/anlsergio/go-by-tests/webapp/store"
+	poker "github.com/anlsergio/go-by-tests/webapp"
 	"log"
 	"net/http"
 	"os"
@@ -16,12 +15,12 @@ func main() {
 		log.Fatalf("could not open file %s, %v", dbFileName, err)
 	}
 
-	st, err := store.NewFileSystemStore(db)
+	st, err := poker.NewFileSystemStore(db)
 	if err != nil {
 		log.Fatalf("problem creating player store, %v", err)
 	}
 
-	sv := api.NewPlayerServer(st)
+	sv := poker.NewPlayerServer(st)
 
 	if err := http.ListenAndServe(":8080", sv); err != nil {
 		log.Fatalf("coult not listen on port 8080, %v", err)
