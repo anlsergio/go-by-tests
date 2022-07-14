@@ -44,6 +44,24 @@ func (s *FileSystemPlayerStore) RecordWin(name string) {
 	s.Database.Encode(s.League)
 }
 
+func FileSystemStoreFromFile(path string) (store *FileSystemPlayerStore, closeFunc func(), err error) {
+	db, err := os.OpenFile(path, os.O_RDWR|os.O_CREATE, 0666)
+	if err != nil {
+		return nil, nil, fmt.Errorf("could not open file %s, %w", path, err)
+	}
+
+	closeFunc = func() {
+		db.Close()
+	}
+
+	store, err = NewFileSystemStore(db)
+	if err != nil {
+		return nil, nil, fmt.Errorf("problem creating player store, %w", err)
+	}
+
+	return store, closeFunc, nil
+}
+
 func NewFileSystemStore(file *os.File) (*FileSystemPlayerStore, error) {
 	err := initPlayerDBFile(file)
 	if err != nil {
@@ -52,7 +70,7 @@ func NewFileSystemStore(file *os.File) (*FileSystemPlayerStore, error) {
 
 	league, err := NewLeague(file)
 	if err != nil {
-		return nil, fmt.Errorf("problem loading player store from file %s, %v", file.Name(), err)
+		return nil, fmt.Errorf("problem loading player playerStore from file %s, %v", file.Name(), err)
 	}
 
 	return &FileSystemPlayerStore{

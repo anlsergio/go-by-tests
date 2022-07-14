@@ -1,7 +1,6 @@
 package poker
 
 import (
-	"github.com/anlsergio/go-by-tests/webapp/tests"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -9,11 +8,11 @@ import (
 
 func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 	player := "Pepper"
-	db, cleanDB := tests.CreateTempFile(t, `[]`)
+	db, cleanDB := CreateTempFile(t, `[]`)
 	defer cleanDB()
 
 	s, err := NewFileSystemStore(db)
-	tests.AssertNoError(t, err)
+	AssertNoError(t, err)
 
 	server := NewPlayerServer(s)
 
@@ -25,19 +24,19 @@ func TestRecordingWinsAndRetrievingThem(t *testing.T) {
 		response := httptest.NewRecorder()
 		server.ServeHTTP(response, newGetScoreRequest(player))
 
-		assertStatusCode(t, http.StatusOK, response.Code)
-		assertResponseBody(t, "3", response.Body.String())
+		AssertStatusCode(t, http.StatusOK, response.Code)
+		AssertResponseBody(t, "3", response.Body.String())
 	})
 
 	t.Run("get league", func(t *testing.T) {
 		response := httptest.NewRecorder()
 		server.ServeHTTP(response, newLeagueRequest())
-		assertStatusCode(t, response.Code, http.StatusOK)
+		AssertStatusCode(t, response.Code, http.StatusOK)
 
 		want := []Player{
 			{player, 3},
 		}
-		got := getLeagueFromResponse(t, response.Body)
-		assertLeague(t, want, got)
+		got := GetLeagueFromResponse(t, response.Body)
+		AssertLeague(t, want, got)
 	})
 }

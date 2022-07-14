@@ -1,13 +1,12 @@
 package poker
 
 import (
-	"github.com/anlsergio/go-by-tests/webapp/tests"
 	"io"
 	"testing"
 )
 
 func TestTape_Write(t *testing.T) {
-	file, cleanDB := tests.CreateTempFile(t, "1234")
+	file, cleanDB := CreateTempFile(t, "1234")
 	defer cleanDB()
 
 	tape := &tape{file}
