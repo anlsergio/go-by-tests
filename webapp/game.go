@@ -12,7 +12,7 @@ type TexasHoldem struct {
 	alerter BlindAlerter
 }
 
-func (g *TexasHoldem) Start(numberOfPlayers int) {
+func (t *TexasHoldem) Start(numberOfPlayers int) {
 	const minimumBlindMinutes = 5
 
 	blindIncrement := time.Duration(minimumBlindMinutes+numberOfPlayers) * time.Minute
@@ -21,14 +21,14 @@ func (g *TexasHoldem) Start(numberOfPlayers int) {
 	blindTime := 0 * time.Second
 
 	for _, blind := range blinds {
-		g.alerter.ScheduleAlertAt(blindTime, blind)
+		t.alerter.ScheduleAlertAt(blindTime, blind)
 		blindTime = blindTime + blindIncrement
 	}
 
 }
 
-func (g *TexasHoldem) Finish(winner string) {
-	g.store.RecordWin(extractWinner(winner))
+func (t *TexasHoldem) Finish(winner string) {
+	t.store.RecordWin(extractWinner(winner))
 }
 
 func NewGame(store PlayerStore, alerter BlindAlerter) *TexasHoldem {
