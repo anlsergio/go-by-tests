@@ -2,12 +2,17 @@ package poker
 
 import "time"
 
-type Game struct {
+type Game interface {
+	Start(numberOfPlayers int)
+	Finish(winner string)
+}
+
+type TexasHoldem struct {
 	store   PlayerStore
 	alerter BlindAlerter
 }
 
-func (g *Game) Start(numberOfPlayers int) {
+func (g *TexasHoldem) Start(numberOfPlayers int) {
 	const minimumBlindMinutes = 5
 
 	blindIncrement := time.Duration(minimumBlindMinutes+numberOfPlayers) * time.Minute
@@ -22,12 +27,12 @@ func (g *Game) Start(numberOfPlayers int) {
 
 }
 
-func (g *Game) Finish(winner string) {
+func (g *TexasHoldem) Finish(winner string) {
 	g.store.RecordWin(extractWinner(winner))
 }
 
-func NewGame(store PlayerStore, alerter BlindAlerter) *Game {
-	return &Game{
+func NewGame(store PlayerStore, alerter BlindAlerter) *TexasHoldem {
+	return &TexasHoldem{
 		store,
 		alerter,
 	}
