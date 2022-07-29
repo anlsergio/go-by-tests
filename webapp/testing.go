@@ -1,11 +1,13 @@
 package poker
 
 import (
+	"fmt"
 	"io"
 	"net/http/httptest"
 	"os"
 	"reflect"
 	"testing"
+	"time"
 )
 
 type StubPlayerStore struct {
@@ -25,6 +27,23 @@ func (s *StubPlayerStore) RecordWin(name string) {
 
 func (s *StubPlayerStore) GetLeague() League {
 	return s.league
+}
+
+type ScheduledAlert struct {
+	At     time.Duration
+	Amount int
+}
+
+func (s *ScheduledAlert) String() string {
+	return fmt.Sprintf("%d chips At %v", s.Amount, s.At)
+}
+
+type SpyBlindAlerter struct {
+	Alerts []ScheduledAlert
+}
+
+func (s *SpyBlindAlerter) ScheduleAlertAt(duration time.Duration, amount int) {
+	s.Alerts = append(s.Alerts, ScheduledAlert{At: duration, Amount: amount})
 }
 
 func CreateTempFile(t testing.TB, initialData string) (fileBuffer *os.File, removeTempFile func()) {
