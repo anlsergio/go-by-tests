@@ -71,3 +71,17 @@ func checkSchedulingCases(t *testing.T, cases []poker.ScheduledAlert, blindAlert
 		})
 	}
 }
+
+func assertScheduledAlert(t testing.TB, want, got poker.ScheduledAlert) {
+	t.Helper()
+
+	gotAmount := got.Amount
+	if gotAmount != want.Amount {
+		t.Errorf("want Amount %d, got %d", want.Amount, gotAmount)
+	}
+
+	gotScheduledTime := got.At
+	if gotScheduledTime != want.At {
+		t.Errorf("want schedule time of %v, got %v", want.At, gotScheduledTime)
+	}
+}
