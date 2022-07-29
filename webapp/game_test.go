@@ -9,7 +9,7 @@ import (
 func TestGame_Start(t *testing.T) {
 	t.Run("it schedules Alerts on game start for 5 players", func(t *testing.T) {
 		playerStore := &poker.StubPlayerStore{}
-		blindAlerter := &poker.SpyBlindAlerter{}
+		blindAlerter := &poker.BlindAlerterSpy{}
 		game := poker.NewGame(playerStore, blindAlerter)
 
 		game.Start(5)
@@ -33,7 +33,7 @@ func TestGame_Start(t *testing.T) {
 
 	t.Run("it schedules Alerts on game start for 7 players", func(t *testing.T) {
 		playerStore := &poker.StubPlayerStore{}
-		blindAlerter := &poker.SpyBlindAlerter{}
+		blindAlerter := &poker.BlindAlerterSpy{}
 		game := poker.NewGame(playerStore, blindAlerter)
 
 		game.Start(7)
@@ -59,7 +59,7 @@ func TestGame_Finish(t *testing.T) {
 	poker.AssertPlayerWin(t, store, winner)
 }
 
-func checkSchedulingCases(t *testing.T, cases []poker.ScheduledAlert, blindAlerter *poker.SpyBlindAlerter) {
+func checkSchedulingCases(t *testing.T, cases []poker.ScheduledAlert, blindAlerter *poker.BlindAlerterSpy) {
 	for i, want := range cases {
 		t.Run(want.String(), func(t *testing.T) {
 			if len(blindAlerter.Alerts) <= i {

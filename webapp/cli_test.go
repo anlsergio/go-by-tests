@@ -10,7 +10,7 @@ import (
 )
 
 var (
-	dummyBlindAlerter = &poker.SpyBlindAlerter{}
+	dummyBlindAlerter = &poker.BlindAlerterSpy{}
 	dummyPlayerStore  = &poker.StubPlayerStore{}
 	dummyStdIn        = &bytes.Buffer{}
 	dummyStdOut       = &bytes.Buffer{}
@@ -42,7 +42,7 @@ func TestCLI(t *testing.T) {
 	t.Run("it prompts the user for the number of players", func(t *testing.T) {
 		stdout := &bytes.Buffer{}
 		in := strings.NewReader("7\n")
-		blindAlerter := &poker.SpyBlindAlerter{}
+		blindAlerter := &poker.BlindAlerterSpy{}
 		game := poker.NewGame(dummyPlayerStore, blindAlerter)
 
 		cli := poker.NewCLI(in, stdout, game)

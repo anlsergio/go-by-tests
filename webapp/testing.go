@@ -38,12 +38,12 @@ func (s *ScheduledAlert) String() string {
 	return fmt.Sprintf("%d chips At %v", s.Amount, s.At)
 }
 
-type SpyBlindAlerter struct {
+type BlindAlerterSpy struct {
 	Alerts []ScheduledAlert
 }
 
-func (s *SpyBlindAlerter) ScheduleAlertAt(duration time.Duration, amount int) {
-	s.Alerts = append(s.Alerts, ScheduledAlert{At: duration, Amount: amount})
+func (b *BlindAlerterSpy) ScheduleAlertAt(duration time.Duration, amount int) {
+	b.Alerts = append(b.Alerts, ScheduledAlert{At: duration, Amount: amount})
 }
 
 func CreateTempFile(t testing.TB, initialData string) (fileBuffer *os.File, removeTempFile func()) {
