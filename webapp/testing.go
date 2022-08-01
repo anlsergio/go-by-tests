@@ -65,11 +65,13 @@ func CreateTempFile(t testing.TB, initialData string) (fileBuffer *os.File, remo
 }
 
 type GameSpy struct {
+	StartCalled  bool
 	StartedWith  int
 	FinishedWith string
 }
 
 func (g *GameSpy) Start(numberOfPlayers int) {
+	g.StartCalled = true
 	g.StartedWith = numberOfPlayers
 }
 
