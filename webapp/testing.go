@@ -42,7 +42,7 @@ type BlindAlerterSpy struct {
 	Alerts []ScheduledAlert
 }
 
-func (b *BlindAlerterSpy) ScheduleAlertAt(duration time.Duration, amount int) {
+func (b *BlindAlerterSpy) ScheduleAlertAt(duration time.Duration, amount int, to io.Writer) {
 	b.Alerts = append(b.Alerts, ScheduledAlert{At: duration, Amount: amount})
 }
 
@@ -65,18 +65,22 @@ func CreateTempFile(t testing.TB, initialData string) (fileBuffer *os.File, remo
 }
 
 type GameSpy struct {
-	StartCalled  bool
-	StartedWith  int
-	FinishedWith string
+	StartCalled      bool
+	StartedWith      int
+	BlindAlert       []byte
+	FinishCalled     string
+	FinishCalledWith string
 }
 
-func (g *GameSpy) Start(numberOfPlayers int) {
+func (g *GameSpy) Start(numberOfPlayers int, out io.Writer) {
 	g.StartCalled = true
 	g.StartedWith = numberOfPlayers
+
+	out.Write(g.BlindAlert)
 }
 
 func (g *GameSpy) Finish(winner string) {
-	g.FinishedWith = winner
+	g.FinishCalledWith = winner
 }
 
 func AssertNoError(t testing.TB, err error) {
@@ -112,7 +116,7 @@ func GetLeagueFromResponse(t testing.TB, body io.Reader) []Player {
 	return league
 }
 
-func AssertStatusCode(t *testing.T, want int, got int) {
+func AssertStatus(t *testing.T, want int, got int) {
 	t.Helper()
 
 	if want != got {
@@ -141,5 +145,47 @@ func AssertLeague(t testing.TB, want []Player, got []Player) {
 
 	if !reflect.DeepEqual(want, got) {
 		t.Errorf("want %v got %v", want, got)
+	}
+}
+
+func MustMakePlayerServer(t *testing.T, store PlayerStore, game Game) *PlayerServer {
+	server, err := NewPlayerServer(store, game)
+	if err != nil {
+		t.Fatal("problem creating player server", err)
+	}
+	return server
+}
+
+func AssertFinishCalledWith(t testing.TB, game *GameSpy, wantWinner string) {
+	t.Helper()
+
+	ok := retryUntil(500*time.Millisecond, func() bool {
+		return game.FinishCalledWith == wantWinner
+	})
+
+	if !ok {
+		t.Errorf("expected finish called with %q but got %q", wantWinner, game.FinishCalledWith)
+	}
+}
+
+func retryUntil(d time.Duration, f func() bool) bool {
+	deadline := time.Now().Add(d)
+
+	for time.Now().Before(deadline) {
+		if f() {
+			return true
+		}
+	}
+
+	return false
+}
+
+func AssertGameStartedWith(t testing.TB, game *GameSpy, wantPlayers int) {
+	t.Helper()
+
+	gotPlayers := game.StartedWith
+
+	if wantPlayers != gotPlayers {
+		t.Errorf("expected Start called with %d players, but got %d", wantPlayers, gotPlayers)
 	}
 }

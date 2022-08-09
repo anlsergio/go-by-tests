@@ -1,9 +1,10 @@
 package main
 
 import (
-	poker "github.com/anlsergio/go-by-tests/webapp"
 	"log"
 	"net/http"
+
+	poker "github.com/anlsergio/go-by-tests/webapp"
 )
 
 const dbFileName = "game.db.json"
@@ -15,7 +16,12 @@ func main() {
 	}
 	defer closeStore()
 
-	server := poker.NewPlayerServer(store)
+	game := poker.NewGame(store, poker.BlindAlertFunc(poker.Alerter))
+
+	server, err := poker.NewPlayerServer(store, game)
+	if err != nil {
+		log.Fatalf("could not create a Player Server, %v", err)
+	}
 
 	if err := http.ListenAndServe(":8080", server); err != nil {
 		log.Fatalf("coult not listen on port 8080, %v", err)

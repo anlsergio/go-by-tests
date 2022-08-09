@@ -1,9 +1,11 @@
 package poker_test
 
 import (
-	poker "github.com/anlsergio/go-by-tests/webapp"
+	"io"
 	"testing"
 	"time"
+
+	poker "github.com/anlsergio/go-by-tests/webapp"
 )
 
 func TestGame_Start(t *testing.T) {
@@ -12,7 +14,7 @@ func TestGame_Start(t *testing.T) {
 		blindAlerter := &poker.BlindAlerterSpy{}
 		game := poker.NewGame(playerStore, blindAlerter)
 
-		game.Start(5)
+		game.Start(5, io.Discard)
 
 		cases := []poker.ScheduledAlert{
 			{0 * time.Second, 100},
@@ -36,7 +38,7 @@ func TestGame_Start(t *testing.T) {
 		blindAlerter := &poker.BlindAlerterSpy{}
 		game := poker.NewGame(playerStore, blindAlerter)
 
-		game.Start(7)
+		game.Start(7, io.Discard)
 
 		cases := []poker.ScheduledAlert{
 			{0 * time.Second, 100},

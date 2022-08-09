@@ -1,9 +1,12 @@
 package poker
 
-import "time"
+import (
+	"io"
+	"time"
+)
 
 type Game interface {
-	Start(numberOfPlayers int)
+	Start(numberOfPlayers int, alertsDestination io.Writer)
 	Finish(winner string)
 }
 
@@ -12,7 +15,7 @@ type TexasHoldem struct {
 	alerter BlindAlerter
 }
 
-func (t *TexasHoldem) Start(numberOfPlayers int) {
+func (t *TexasHoldem) Start(numberOfPlayers int, alertsDestination io.Writer) {
 	const minimumBlindMinutes = 5
 
 	blindIncrement := time.Duration(minimumBlindMinutes+numberOfPlayers) * time.Minute
@@ -21,10 +24,9 @@ func (t *TexasHoldem) Start(numberOfPlayers int) {
 	blindTime := 0 * time.Second
 
 	for _, blind := range blinds {
-		t.alerter.ScheduleAlertAt(blindTime, blind)
+		t.alerter.ScheduleAlertAt(blindTime, blind, alertsDestination)
 		blindTime = blindTime + blindIncrement
 	}
-
 }
 
 func (t *TexasHoldem) Finish(winner string) {

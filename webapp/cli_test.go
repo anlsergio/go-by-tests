@@ -2,10 +2,11 @@ package poker_test
 
 import (
 	"bytes"
-	poker "github.com/anlsergio/go-by-tests/webapp"
 	"io"
 	"strings"
 	"testing"
+
+	poker "github.com/anlsergio/go-by-tests/webapp"
 )
 
 var (
@@ -26,8 +27,8 @@ func TestCLI(t *testing.T) {
 		cli.PlayPoker()
 
 		assertMessagesSentToUser(t, stdout, poker.NumberOfPlayersPrompt)
-		assertGameStartedWith(t, game, 3)
-		assertFinishWithWinner(t, game, "Chris")
+		poker.AssertGameStartedWith(t, game, 3)
+		poker.AssertFinishCalledWith(t, game, "Chris")
 	})
 
 	t.Run("start game with 8 players and finish with 'Cleo' as a winner", func(t *testing.T) {
@@ -40,8 +41,8 @@ func TestCLI(t *testing.T) {
 		cli.PlayPoker()
 
 		assertMessagesSentToUser(t, stdout, poker.NumberOfPlayersPrompt)
-		assertGameStartedWith(t, game, 8)
-		assertFinishWithWinner(t, game, "Cleo")
+		poker.AssertGameStartedWith(t, game, 8)
+		poker.AssertFinishCalledWith(t, game, "Cleo")
 	})
 
 	t.Run("it prints an error when a non numeric value is entered", func(t *testing.T) {
@@ -79,24 +80,6 @@ func assertGameNotStarted(t testing.TB, game *poker.GameSpy) {
 
 	if game.StartCalled {
 		t.Errorf("the game should not have started due to invalid input")
-	}
-}
-
-func assertFinishWithWinner(t *testing.T, game *poker.GameSpy, wantWinner string) {
-	gotWinner := game.FinishedWith
-
-	if wantWinner != gotWinner {
-		t.Errorf("want %q winner, but got %q", wantWinner, gotWinner)
-	}
-}
-
-func assertGameStartedWith(t testing.TB, game *poker.GameSpy, wantPlayers int) {
-	t.Helper()
-
-	gotPlayers := game.StartedWith
-
-	if wantPlayers != gotPlayers {
-		t.Errorf("expected Start called with %d players, but got %d", wantPlayers, gotPlayers)
 	}
 }
 

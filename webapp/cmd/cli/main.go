@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	poker "github.com/anlsergio/go-by-tests/webapp"
 	"log"
 	"os"
+
+	poker "github.com/anlsergio/go-by-tests/webapp"
 )
 
 const dbFileName = "game.db.json"
@@ -19,7 +20,7 @@ func main() {
 	}
 	defer closeStore()
 
-	game := poker.NewGame(store, poker.BlindAlertFunc(poker.StdOutAlerter))
+	game := poker.NewGame(store, poker.BlindAlertFunc(poker.Alerter))
 
 	cli := poker.NewCLI(os.Stdin, os.Stdout, game)
 	cli.PlayPoker()
