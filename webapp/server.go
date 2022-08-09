@@ -52,7 +52,7 @@ func (s *PlayerServer) webSocket(w http.ResponseWriter, r *http.Request) {
 	numberOfPlayersMsg := ws.WaitForMsg()
 	numberOfPlayers, _ := strconv.Atoi(numberOfPlayersMsg)
 
-	s.Game.Start(numberOfPlayers, ws) // todo: don't discard the blind messages!
+	s.Game.Start(numberOfPlayers, ws)
 
 	winnerMsg := ws.WaitForMsg()
 
